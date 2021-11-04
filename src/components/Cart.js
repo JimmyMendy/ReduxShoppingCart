@@ -100,7 +100,8 @@ const Cart = ({ cart, cartPosition, close }) => {
                     </p>
                     <div className='mt-6'>
                       <a
-                        href='#'
+                        href="/"
+                        onClick={() => close()}
                         className='flex justify-center items-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-gray-400 hover:bg-gray-600 '
                       >
                         Checkout

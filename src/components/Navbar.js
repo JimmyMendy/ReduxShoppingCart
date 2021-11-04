@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, { useState, useEffect } from "react";
 import MobileNavbar from "./MobileNavbar";
 import { ManLinks } from "../utils/ManInnerLink";
 import { WomenLinks } from "../utils/WomenInnerLink";
@@ -8,22 +8,37 @@ import { openCart } from "../redux/Shopping/shopping-actions";
 import { Link } from "react-router-dom";
 import { BiChevronDown } from "react-icons/bi";
 import { GiHamburgerMenu } from "react-icons/gi";
+import { MdClose } from "react-icons/md";
 import Background from "../../src/assets/boots.jpg";
 import Loupe from "../../src/assets/loupe.png";
 import Avatar from "../../src/assets/avatar.png";
 import Heart from "../../src/assets/heart.png";
 import ShoppingCart from "../../src/assets/shopping-cart.png";
 
-const Navbar = ({ cart }) => {
-  // const [open, setOpen] = useState(false)
+const Navbar = ({ cart, basket }) => {
+  const [cartCount, setCartCount] = useState(0);
+  const [open, setOpen] = useState(false);
+
+  const handleToggle = () => {
+    setOpen(!open)
+  }
+
+  useEffect(() => {
+    let count = 0;
+    basket.forEach((item) => {
+      count += item.qty;
+    });
+
+    setCartCount(count);
+  }, [basket, setCartCount]);
   return (
     <div className='max-w-2xl mx-auto px-4 sm:py-8 sm:px-6 lg:max-w-7xl lg:px-8'>
       <div className='shadow-xs py-6 lg:py-10 z-30 relative'>
         <div className='flex justify-between items-center'>
           <div className='flex items-center'>
             <div className='block lg:hidden'>
-              <GiHamburgerMenu />
-              {/* <MobileNavbar open={open}/> */}
+              {open ? <MdClose onClick={handleToggle}/> : <GiHamburgerMenu onClick={handleToggle}/>}
+            <MobileNavbar open={open} />
             </div>
             <button className='cursor-pointer border-2 transition-colors border-transparent hover:border-primary rounded-full p-2 sm:p-4 ml-2 sm:ml-3 md:ml-5 lg:mr-8 group focus:outline-none'>
               <img
@@ -57,6 +72,7 @@ const Navbar = ({ cart }) => {
                 className='w-5 sm:w-6 md:w-8 h-5 sm:h-6 md:h-8 block group-hover:hidden'
               />
             </Link>
+
             <Link
               to='#'
               onClick={() => cart()}
@@ -67,7 +83,9 @@ const Navbar = ({ cart }) => {
                 alt='avatar'
                 className='w-5 sm:w-6 md:w-8 h-5 sm:h-6 md:h-8 block group-hover:hidden'
               />
-              {/* <span className="absolute inset-top-px -inset-right-px"> 2 </span> */}
+              <span className='text-md font-medium text-gray-700 group-hover:text-gray-800 absolute -top-2 -right-2 md:right-1 md:top-1 rounded-full py-3 px-3 h-4 w-4  bg-gray-200 flex items-center justify-center'>
+                {cartCount}
+              </span>
             </Link>
           </div>
         </div>
@@ -103,7 +121,11 @@ const Navbar = ({ cart }) => {
                     <ul>
                       {ManLinks.map((link) => (
                         <li key={link.id}>
-                          <Link key={link.id} className={link.className} to={link.to}>
+                          <Link
+                            key={link.id}
+                            className={link.className}
+                            to={link.to}
+                          >
                             {link.name}
                           </Link>
                         </li>
@@ -115,7 +137,11 @@ const Navbar = ({ cart }) => {
                     <ul>
                       {WomenLinks.map((link) => (
                         <li key={link.id}>
-                          <Link key={link.id} className={link.className} to={link.to}>
+                          <Link
+                            key={link.id}
+                            className={link.className}
+                            to={link.to}
+                          >
                             {link.name}
                           </Link>
                         </li>
@@ -127,7 +153,11 @@ const Navbar = ({ cart }) => {
                     <ul>
                       {KidLinks.map((link) => (
                         <li key={link.id}>
-                          <Link key={link.id} className={link.className} to={link.to}>
+                          <Link
+                            key={link.id}
+                            className={link.className}
+                            to={link.to}
+                          >
                             {link.name}
                           </Link>
                         </li>
@@ -174,10 +204,16 @@ const Navbar = ({ cart }) => {
   );
 };
 
+const mapStateToProps = (state) => {
+  return {
+    basket: state.shop.cart,
+  };
+};
+
 const mapDispatchToProps = (dispatch) => {
   return {
     cart: () => dispatch(openCart()),
   };
 };
 
-export default connect(null, mapDispatchToProps)(Navbar);
+export default connect(mapStateToProps, mapDispatchToProps)(Navbar);
